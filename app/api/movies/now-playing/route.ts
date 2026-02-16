@@ -1,25 +1,20 @@
-import { NextRequest } from 'next/server';
-import { rateLimit, createRateLimitedResponse } from '@/lib/rate-limit';
-import { NOW_PLAYING_MOVIES } from '@/lib/mock-data';
-import type { PaginatedResponse } from '@/types';
-
-export const revalidate = 3600; // Cache for 1 hour
-
-const API_KEY = process.env.API_KEY;
-const BASE_URL = 'https://api.themoviedb.org/3';
+import { NextRequest } from "next/server";
+import { rateLimit, createRateLimitedResponse } from "@/lib/rate-limit";
+import { NOW_PLAYING_MOVIES } from "@/lib/mock-data";
+import type { PaginatedResponse } from "@/types";
 
 export async function GET(request: NextRequest): Promise<Response> {
+  const API_KEY = process.env.API_KEY;
+  const BASE_URL = "https://api.themoviedb.org/3";
+
   try {
-    const limit = rateLimit();
+    const limit = await rateLimit();
     if (!limit.success) {
-      return createRateLimitedResponse(
-        { error: 'Too many requests' },
-        limit
-      );
+      return createRateLimitedResponse({ error: "Too many requests" }, limit);
     }
 
     const { searchParams } = new URL(request.url);
-    const page = searchParams.get('page') || '1';
+    const page = searchParams.get("page") || "1";
 
     if (!API_KEY) {
       const response: PaginatedResponse = {
@@ -36,8 +31,8 @@ export async function GET(request: NextRequest): Promise<Response> {
       `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&page=${page}&language=en-US`,
       {
         next: { revalidate: 3600 },
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
 
     if (!tmdbResponse.ok) {
@@ -48,7 +43,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     return createRateLimitedResponse(data, limit);
   } catch (error) {
-    console.error('[API] Now-playing error:', error);
+    console.error("[API] Now-playing error:", error);
 
     // Fallback to mock data
     const mockResponse: PaginatedResponse = {
@@ -58,6 +53,10 @@ export async function GET(request: NextRequest): Promise<Response> {
       total_results: NOW_PLAYING_MOVIES.length,
     };
 
-    return createRateLimitedResponse(mockResponse, { success: true, remaining: 100, resetTime: Date.now() + 60000 });
+    return createRateLimitedResponse(mockResponse, {
+      success: true,
+      remaining: 100,
+      resetTime: Date.now() + 60000,
+    });
   }
 }

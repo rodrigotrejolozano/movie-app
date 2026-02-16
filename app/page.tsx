@@ -1,11 +1,11 @@
-import { Header } from '@/components/header';
-import { MovieCarousel } from '@/components/movie-carousel';
-import { movieService } from '@/lib/movie-service';
+import { HeaderApp } from "@/components/header";
+import { MovieCarousel } from "@/components/movie-carousel";
+import { movieService } from "@/lib/movie-service";
 
 export const metadata = {
-  title: 'Movie Explorer - Discover your next favorite movie',
+  title: "Movie Explorer - Descubre tu próxima película favorita",
   description:
-    'Browse trending movies, top-rated films, and discover your next favorite with Movie Explorer',
+    "Explora películas en tendencia, las mejor calificadas y descubre tu próxima favorita con Movie Explorer",
 };
 
 export default async function HomePage() {
@@ -15,9 +15,12 @@ export default async function HomePage() {
     movieService.getNowPlaying(),
   ]);
 
+  if (typeof window !== "undefined") {
+    return <></>;
+  }
   return (
     <>
-      <Header />
+      <HeaderApp />
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative w-full h-[500px] bg-gradient-to-br from-primary/20 via-primary/5 to-background overflow-hidden">
@@ -25,23 +28,24 @@ export default async function HomePage() {
           <div className="relative h-full flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto">
             <div className="space-y-6">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground">
-                Discover <span className="text-primary">Cinema</span>
+                Descubre el <span className="text-primary">Cine</span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
-                Explore trending movies, top-rated films, and build your perfect watchlist
+                Explora películas en tendencia, las mejor calificadas y crea tu
+                lista de favoritos perfecta
               </p>
               <div className="flex flex-wrap gap-3 justify-center pt-4">
                 <a
                   href="/explore"
                   className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
                 >
-                  Start Exploring
+                  Empezar a Explorar
                 </a>
                 <a
                   href="/favorites"
                   className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-muted transition-colors"
                 >
-                  My Favorites
+                  Mis Favoritos
                 </a>
               </div>
             </div>
@@ -51,19 +55,19 @@ export default async function HomePage() {
         {/* Carousels */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
           <MovieCarousel
-            title="🔥 Trending Now"
+            title="🔥 Tendencias de Hoy"
             movies={trending.results.slice(0, 12)}
             href="/explore?view=trending"
           />
 
           <MovieCarousel
-            title="⭐ Top Rated"
+            title="⭐ Mejor Valoradas"
             movies={topRated.results.slice(0, 12)}
             href="/explore?view=top-rated"
           />
 
           <MovieCarousel
-            title="🎬 Now Playing"
+            title="🎬 En Cartelera"
             movies={nowPlaying.results.slice(0, 12)}
             href="/explore?view=now-playing"
           />
@@ -73,16 +77,17 @@ export default async function HomePage() {
         <section className="bg-gradient-to-r from-primary/10 to-primary/5 border-t border-border">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-              Your personal movie guide
+              Tu guía personal de cine
             </h2>
             <p className="text-lg text-muted-foreground">
-              Save your favorite movies, filter by genre and rating, and never miss a great film.
+              Guarda tus películas favoritas, filtra por género y calificación,
+              y nunca te pierdas de una gran película.
             </p>
             <a
               href="/explore"
               className="inline-block px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
             >
-              Explore All Movies
+              Explorar Todas las Películas
             </a>
           </div>
         </section>

@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { Header } from '@/components/header';
-import { MovieGrid } from '@/components/movie-grid';
-import { useMovieStore } from '@/lib/store';
-import Link from 'next/link';
+import { HeaderApp } from "@/components/header";
+import { MovieGrid } from "@/components/movie-grid";
+import { useMovieStore } from "@/lib/store";
+import Link from "next/link";
 
 export default function FavoritesPage() {
   const { favorites } = useMovieStore();
 
   return (
     <>
-      <Header />
+      <HeaderApp />
       <main className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">My Favorites</h1>
             <p className="text-muted-foreground">
-              {favorites.length} movie{favorites.length !== 1 ? 's' : ''} saved
+              {favorites.length} movie{favorites.length !== 1 ? "s" : ""} saved
             </p>
           </div>
 
@@ -28,7 +28,8 @@ export default function FavoritesPage() {
                   No favorites yet
                 </h2>
                 <p className="text-muted-foreground">
-                  Start adding movies to your favorites list by clicking the heart icon
+                  Start adding movies to your favorites list by clicking the
+                  heart icon
                 </p>
                 <Link
                   href="/explore"

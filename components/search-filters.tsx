@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import React from "react"
+import React from "react";
 
-import { X } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { X } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { useMovieStore } from '@/lib/store';
-import { GENRES } from '@/lib/mock-data';
-import type { MovieFilters } from '@/types';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { useMovieStore } from "@/lib/store";
+import { GENRES } from "@/lib/mock-data";
 
 export function SearchFilters() {
   const { filters, setFilters, resetFilters } = useMovieStore();
@@ -40,7 +39,7 @@ export function SearchFilters() {
 
   const handleSortChange = (value: string) => {
     setFilters({
-      sortBy: value as 'popularity' | 'rating' | 'release_date',
+      sortBy: value as "popularity" | "rating" | "release_date",
     });
   };
 
@@ -49,7 +48,7 @@ export function SearchFilters() {
     filters.year ||
     filters.genreId ||
     filters.minRating ||
-    filters.sortBy !== 'popularity';
+    filters.sortBy !== "popularity";
 
   return (
     <div className="space-y-4">
@@ -57,25 +56,28 @@ export function SearchFilters() {
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input
           type="text"
-          placeholder="Search movies, shows..."
+          placeholder="Buscar películas, series..."
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           className="flex-1"
         />
         <Button type="submit" className="px-6">
-          Search
+          Buscar
         </Button>
       </form>
 
       {/* Filters Row */}
       <div className="flex flex-wrap gap-3 items-center">
         {/* Year Filter */}
-        <Select value={filters.year?.toString() || 'all'} onValueChange={handleYearChange}>
+        <Select
+          value={filters.year?.toString() || "all"}
+          onValueChange={handleYearChange}
+        >
           <SelectTrigger className="w-32">
-            <SelectValue placeholder="Year" />
+            <SelectValue placeholder="Año" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Years</SelectItem>
+            <SelectItem value="all">Todos los años</SelectItem>
             {Array.from({ length: 30 }, (_, i) => 2024 - i).map((year) => (
               <SelectItem key={year} value={year.toString()}>
                 {year}
@@ -85,12 +87,15 @@ export function SearchFilters() {
         </Select>
 
         {/* Genre Filter */}
-        <Select value={filters.genreId?.toString() || 'all'} onValueChange={handleGenreChange}>
+        <Select
+          value={filters.genreId?.toString() || "all"}
+          onValueChange={handleGenreChange}
+        >
           <SelectTrigger className="w-32">
-            <SelectValue placeholder="Genre" />
+            <SelectValue placeholder="Género" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Genres</SelectItem>
+            <SelectItem value="all">Todos los géneros</SelectItem>
             {GENRES.map((genre) => (
               <SelectItem key={genre.id} value={genre.id.toString()}>
                 {genre.name}
@@ -100,12 +105,15 @@ export function SearchFilters() {
         </Select>
 
         {/* Rating Filter */}
-        <Select value={filters.minRating?.toString() || '0'} onValueChange={handleRatingChange}>
+        <Select
+          value={filters.minRating?.toString() || "0"}
+          onValueChange={handleRatingChange}
+        >
           <SelectTrigger className="w-32">
-            <SelectValue placeholder="Min Rating" />
+            <SelectValue placeholder="Calificación Mín." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="0">All Ratings</SelectItem>
+            <SelectItem value="0">Cualquier calificación</SelectItem>
             <SelectItem value="6">6+</SelectItem>
             <SelectItem value="7">7+</SelectItem>
             <SelectItem value="8">8+</SelectItem>
@@ -114,14 +122,17 @@ export function SearchFilters() {
         </Select>
 
         {/* Sort Filter */}
-        <Select value={filters.sortBy || 'popularity'} onValueChange={handleSortChange}>
+        <Select
+          value={filters.sortBy || "popularity"}
+          onValueChange={handleSortChange}
+        >
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="Sort by" />
+            <SelectValue placeholder="Ordenar por" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="popularity">Most Popular</SelectItem>
-            <SelectItem value="rating">Highest Rated</SelectItem>
-            <SelectItem value="release_date">Newest</SelectItem>
+            <SelectItem value="popularity">Más populares</SelectItem>
+            <SelectItem value="rating">Mejor valoradas</SelectItem>
+            <SelectItem value="release_date">Más recientes</SelectItem>
           </SelectContent>
         </Select>
 
@@ -134,7 +145,7 @@ export function SearchFilters() {
             className="gap-2 bg-transparent"
           >
             <X size={16} />
-            Clear
+            Limpiar
           </Button>
         )}
       </div>

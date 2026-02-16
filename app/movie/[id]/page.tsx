@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Heart, ExternalLink, Calendar, Clock, Star } from 'lucide-react';
-import { Header } from '@/components/header';
-import { MovieCarousel } from '@/components/movie-carousel';
-import { useMovieStore } from '@/lib/store';
-import { movieService, getImageUrl } from '@/lib/movie-service';
-import { MOCK_MOVIES } from '@/lib/mock-data';
-import Link from 'next/link';
-import type { Movie } from '@/types';
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Heart, ExternalLink, Calendar, Clock, Star } from "lucide-react";
+import { HeaderApp } from "@/components/header";
+import { MovieCarousel } from "@/components/movie-carousel";
+import { useMovieStore } from "@/lib/store";
+import { movieService, getImageUrl } from "@/lib/movie-service";
+import { MOCK_MOVIES } from "@/lib/mock-data";
+import Link from "next/link";
+import type { Movie } from "@/types";
 
 export default function MovieDetailPage() {
   const params = useParams();
@@ -33,7 +33,7 @@ export default function MovieDetailPage() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <HeaderApp />
         <main className="min-h-screen bg-background flex items-center justify-center">
           <div className="animate-spin w-12 h-12 border-4 border-border border-t-primary rounded-full" />
         </main>
@@ -44,12 +44,16 @@ export default function MovieDetailPage() {
   if (!movie) {
     return (
       <>
-        <Header />
+        <HeaderApp />
         <main className="min-h-screen bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center space-y-4">
-              <h1 className="text-2xl font-bold text-foreground">Movie not found</h1>
-              <p className="text-muted-foreground">The movie you're looking for doesn't exist.</p>
+              <h1 className="text-2xl font-bold text-foreground">
+                Movie not found
+              </h1>
+              <p className="text-muted-foreground">
+                The movie you're looking for doesn't exist.
+              </p>
               <Link
                 href="/explore"
                 className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
@@ -71,24 +75,27 @@ export default function MovieDetailPage() {
     }
   };
 
-  const releaseYear = movie.release_date.split('-')[0];
+  const releaseYear = movie.release_date.split("-")[0];
   const rating = movie.vote_average.toFixed(1);
 
   // Get related movies
-  const relatedMovies = MOCK_MOVIES.filter((m) => 
-    m.id !== movie.id && 
-    m.genre_ids.some((g) => movie.genre_ids.includes(g))
+  const relatedMovies = MOCK_MOVIES.filter(
+    (m) =>
+      m.id !== movie.id && m.genre_ids.some((g) => movie.genre_ids.includes(g)),
   ).slice(0, 8);
 
   return (
     <>
-      <Header />
+      <HeaderApp />
       <main className="min-h-screen bg-background">
         {/* Backdrop */}
         {movie.backdrop_path && (
           <div className="relative w-full h-96 overflow-hidden">
             <img
-              src={getImageUrl(movie.backdrop_path, 'original') || "/placeholder.svg"}
+              src={
+                getImageUrl(movie.backdrop_path, "original") ||
+                "/placeholder.svg"
+              }
               alt={movie.title}
               className="w-full h-full object-cover"
             />
@@ -97,12 +104,14 @@ export default function MovieDetailPage() {
         )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10 pb-16">
-          {/* Movie Header */}
+          {/* Movie HeaderApp */}
           <div className="flex flex-col md:flex-row gap-8 mb-16">
             {/* Poster */}
             <div className="flex-shrink-0 w-full md:w-64">
               <img
-                src={getImageUrl(movie.poster_path, 'w500') || "/placeholder.svg"}
+                src={
+                  getImageUrl(movie.poster_path, "w500") || "/placeholder.svg"
+                }
                 alt={movie.title}
                 className="w-full rounded-xl shadow-2xl"
               />
@@ -114,7 +123,9 @@ export default function MovieDetailPage() {
                 <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {movie.title}
                 </h1>
-                <p className="text-lg text-muted-foreground">{movie.overview}</p>
+                <p className="text-lg text-muted-foreground">
+                  {movie.overview}
+                </p>
               </div>
 
               {/* Meta Info */}
@@ -123,7 +134,9 @@ export default function MovieDetailPage() {
                   <p className="text-sm text-muted-foreground">Release Date</p>
                   <div className="flex items-center gap-2">
                     <Calendar size={18} className="text-primary" />
-                    <p className="font-semibold text-foreground">{releaseYear}</p>
+                    <p className="font-semibold text-foreground">
+                      {releaseYear}
+                    </p>
                   </div>
                 </div>
 
@@ -132,7 +145,7 @@ export default function MovieDetailPage() {
                   <div className="flex items-center gap-2">
                     <Clock size={18} className="text-primary" />
                     <p className="font-semibold text-foreground">
-                      {movie.runtime ? `${movie.runtime}m` : 'N/A'}
+                      {movie.runtime ? `${movie.runtime}m` : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -140,7 +153,10 @@ export default function MovieDetailPage() {
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Rating</p>
                   <div className="flex items-center gap-2">
-                    <Star size={18} className="text-yellow-400 fill-yellow-400" />
+                    <Star
+                      size={18}
+                      className="text-yellow-400 fill-yellow-400"
+                    />
                     <p className="font-semibold text-foreground">{rating}/10</p>
                   </div>
                 </div>
@@ -176,15 +192,15 @@ export default function MovieDetailPage() {
                   onClick={handleToggleFavorite}
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                     favorited
-                      ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
-                      : 'bg-primary/20 text-primary hover:bg-primary/30'
+                      ? "bg-red-500/20 text-red-500 hover:bg-red-500/30"
+                      : "bg-primary/20 text-primary hover:bg-primary/30"
                   }`}
                 >
                   <Heart
                     size={20}
-                    className={favorited ? 'fill-current' : ''}
+                    className={favorited ? "fill-current" : ""}
                   />
-                  {favorited ? 'Saved' : 'Save'}
+                  {favorited ? "Saved" : "Save"}
                 </button>
                 <a
                   href={`https://www.themoviedb.org/movie/${movieId}`}
@@ -202,10 +218,7 @@ export default function MovieDetailPage() {
           {/* Related Movies */}
           {relatedMovies.length > 0 && (
             <div className="pt-8 border-t border-border">
-              <MovieCarousel
-                title="Similar Movies"
-                movies={relatedMovies}
-              />
+              <MovieCarousel title="Similar Movies" movies={relatedMovies} />
             </div>
           )}
         </div>

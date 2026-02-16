@@ -4,17 +4,17 @@ import "./globals.css";
 import { FAVICON_URL } from "@/config/constants";
 
 export const metadata: Metadata = {
-  title: "Movie Explorer - Discover & Save Your Favorite Movies",
+  title: "Explorador de Películas - Descubre y Guarda tus Películas Favoritas",
   description:
-    "Explore trending movies, top-rated films, and build your personal watchlist. Search by genre, rating, and year. Frontend-only app powered by The Movie Database API.",
+    "Explora películas en tendencia, las mejor valoradas y crea tu lista de seguimiento personal. Busca por género, puntuación y año. Aplicación frontend potenciada por la API de The Movie Database.",
   keywords: [
-    "movies",
-    "trending",
-    "top rated",
-    "watchlist",
-    "cinema",
+    "películas",
+    "tendencia",
+    "mejor valoradas",
+    "lista de seguimiento",
+    "cine",
     "film",
-    "discovery",
+    "descubrimiento",
   ],
   creator: "Movie Explorer",
   icons: {

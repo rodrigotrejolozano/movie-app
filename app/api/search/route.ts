@@ -3,12 +3,10 @@ import { rateLimit, createRateLimitedResponse } from "@/lib/rate-limit";
 import { MOCK_MOVIES } from "@/lib/mock-data";
 import type { PaginatedResponse } from "@/types";
 
-export const revalidate = 1800; // Cache for 30 minutes
-
-const API_KEY = process.env.API_KEY;
-const BASE_URL = "https://api.themoviedb.org/3";
-
 export async function GET(request: NextRequest): Promise<Response> {
+  const API_KEY = process.env.API_KEY;
+  const BASE_URL = "https://api.themoviedb.org/3";
+
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q") || "";
   const page = searchParams.get("page") || "1";
@@ -16,7 +14,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const minRating = searchParams.get("minRating");
 
   try {
-    const limit = rateLimit();
+    const limit = await rateLimit();
     if (!limit.success) {
       return createRateLimitedResponse({ error: "Too many requests" }, limit);
     }
@@ -81,7 +79,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     console.error("[API] Search error:", error);
 
     // Fallback to mock data
-    let filtered = MOCK_MOVIES.filter((movie) =>
+    const filtered = MOCK_MOVIES.filter((movie) =>
       movie.title.toLowerCase().includes(query.toLowerCase()),
     );
 

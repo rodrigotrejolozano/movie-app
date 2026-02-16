@@ -1,5 +1,5 @@
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
 // Simple in-memory rate limiting (caching handled by Next.js revalidate)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -7,16 +7,16 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS_PER_WINDOW = 100; // 100 requests per minute
 
-export function rateLimit(): {
+export async function rateLimit(): Promise<{
   success: boolean;
   remaining: number;
   resetTime: number;
-} {
-  const headersList = headers();
+}> {
+  const headersList = await headers();
   const ip =
-    headersList.get('x-forwarded-for')?.split(',')[0] ||
-    headersList.get('x-real-ip') ||
-    'unknown';
+    headersList.get("x-forwarded-for")?.split(",")[0] ||
+    headersList.get("x-real-ip") ||
+    "unknown";
 
   const now = Date.now();
   const limit = rateLimitMap.get(ip);
@@ -52,16 +52,19 @@ export function rateLimit(): {
 
 export function setRateLimitHeaders(
   response: Response,
-  limit: { success: boolean; remaining: number; resetTime: number }
+  limit: { success: boolean; remaining: number; resetTime: number },
 ): Response {
   const headers = new Headers(response.headers);
-  headers.set('X-RateLimit-Remaining', limit.remaining.toString());
-  headers.set('X-RateLimit-Reset', Math.ceil(limit.resetTime / 1000).toString());
+  headers.set("X-RateLimit-Remaining", limit.remaining.toString());
+  headers.set(
+    "X-RateLimit-Reset",
+    Math.ceil(limit.resetTime / 1000).toString(),
+  );
 
   if (!limit.success) {
-    return new Response('Too many requests', {
+    return new Response("Too many requests", {
       status: 429,
-      statusText: 'Too Many Requests',
+      statusText: "Too Many Requests",
       headers,
     });
   }
@@ -74,20 +77,20 @@ export function setRateLimitHeaders(
   });
 }
 
-export function createRateLimitedResponse<T>(
+export async function createRateLimitedResponse<T>(
   data: T,
-  limit: { success: boolean; remaining: number; resetTime: number }
-): Response {
+  limit: { success: boolean; remaining: number; resetTime: number },
+): Promise<Response> {
   const headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-RateLimit-Remaining': limit.remaining.toString(),
-    'X-RateLimit-Reset': Math.ceil(limit.resetTime / 1000).toString(),
+    "Content-Type": "application/json",
+    "X-RateLimit-Remaining": limit.remaining.toString(),
+    "X-RateLimit-Reset": Math.ceil(limit.resetTime / 1000).toString(),
   });
 
   if (!limit.success) {
-    return new Response('Too many requests', {
+    return new Response("Too many requests", {
       status: 429,
-      statusText: 'Too Many Requests',
+      statusText: "Too Many Requests",
       headers,
     });
   }

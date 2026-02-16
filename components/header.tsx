@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Heart, Layout, List } from 'lucide-react';
-import { useMovieStore } from '@/lib/store';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { Heart, Layout, List } from "lucide-react";
+import { useMovieStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
-export function Header() {
+export function HeaderApp() {
   const { favorites, viewMode, setViewMode } = useMovieStore();
 
   return (
@@ -15,7 +15,9 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">🎬</span>
+              <span className="text-primary-foreground font-bold text-lg">
+                🎬
+              </span>
             </div>
             <span className="font-bold text-lg hidden sm:inline text-foreground">
               Movie Explorer
@@ -24,21 +26,24 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
-              Home
+            <Link
+              href="/"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              Inicio
             </Link>
             <Link
               href="/explore"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
-              Explore
+              Explorar
             </Link>
             <Link
               href="/favorites"
               className="flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors"
             >
               <Heart size={16} />
-              Favorites
+              Favoritos
               {favorites.length > 0 && (
                 <span className="ml-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-primary rounded-full">
                   {favorites.length}
@@ -52,17 +57,17 @@ export function Header() {
             {/* View Mode Toggle */}
             <div className="hidden sm:flex gap-1 bg-muted p-1 rounded-lg">
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                variant={viewMode === "grid" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode("grid")}
                 className="w-9 h-9 p-0"
               >
                 <Layout size={16} />
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                variant={viewMode === "list" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('list')}
+                onClick={() => setViewMode("list")}
                 className="w-9 h-9 p-0"
               >
                 <List size={16} />
