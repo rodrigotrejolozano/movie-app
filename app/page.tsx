@@ -3,9 +3,8 @@ import { MovieCarousel } from "@/components/movie-carousel";
 import { movieService } from "@/lib/movie-service";
 
 export const metadata = {
-  title: "Movie Explorer - Descubre tu próxima película favorita",
-  description:
-    "Explora películas en tendencia, las mejor calificadas y descubre tu próxima favorita con Movie Explorer",
+  title: "Explorador de Películas",
+  description: "Explora películas.",
 };
 
 export default async function HomePage() {
@@ -15,9 +14,6 @@ export default async function HomePage() {
     movieService.getNowPlaying(),
   ]);
 
-  if (typeof window !== "undefined") {
-    return <></>;
-  }
   return (
     <>
       <HeaderApp />

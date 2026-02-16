@@ -6,6 +6,36 @@ import {
 } from "./mock-data";
 import type { Movie, PaginatedResponse, SearchFilters } from "@/types";
 
+const API_KEY = process.env.API_KEY;
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+
+async function fetchFromTMDB<T>(
+  endpoint: string,
+  revalidate = 3600,
+): Promise<T | null> {
+  if (!API_KEY) return null;
+
+  const separator = endpoint.includes("?") ? "&" : "?";
+  const url = `${TMDB_BASE_URL}${endpoint}${separator}api_key=${API_KEY}&language=es-ES`;
+
+  try {
+    const response = await fetch(url, {
+      next: { revalidate },
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) return null;
+      throw new Error(`TMDB API error: ${response.statusText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(`[fetchFromTMDB] Error fetching ${endpoint}:`, error);
+    return null;
+  }
+}
+
 // Utility function to build image URLs
 export const getImageUrl = (
   path: string | null,
@@ -14,24 +44,15 @@ export const getImageUrl = (
   if (!path) return "/placeholder.svg";
   return `https://image.tmdb.org/t/p/${size}${path}`;
 };
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-// Movie Service - all requests go through local API routes
+
+// Movie Service - direct TMDB integration (Server-side only)
 export const movieService = {
   async getTrending(page = 1): Promise<PaginatedResponse> {
-    try {
-      const response = await fetch(
-        `${baseUrl}/api/movies/trending?page=${page}`,
-      );
-      console.log(response);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch trending movies: ${response.statusText}`,
-        );
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error fetching trending:", error);
+    const data = await fetchFromTMDB<PaginatedResponse>(
+      `/trending/movie/week?page=${page}`,
+      3600,
+    );
+    if (!data) {
       return {
         results: TRENDING_MOVIES,
         page: 1,
@@ -39,23 +60,15 @@ export const movieService = {
         total_results: TRENDING_MOVIES.length,
       };
     }
+    return data;
   },
 
   async getTopRated(page = 1): Promise<PaginatedResponse> {
-    try {
-      const response = await fetch(
-        `${baseUrl}/api/movies/top-rated?page=${page}`,
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch top-rated movies: ${response.statusText}`,
-        );
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error fetching top-rated:", error);
+    const data = await fetchFromTMDB<PaginatedResponse>(
+      `/movie/top_rated?page=${page}`,
+      3600,
+    );
+    if (!data) {
       return {
         results: TOP_RATED_MOVIES,
         page: 1,
@@ -63,23 +76,15 @@ export const movieService = {
         total_results: TOP_RATED_MOVIES.length,
       };
     }
+    return data;
   },
 
   async getNowPlaying(page = 1): Promise<PaginatedResponse> {
-    try {
-      const response = await fetch(
-        `${baseUrl}/api/movies/now-playing?page=${page}`,
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch now-playing movies: ${response.statusText}`,
-        );
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error fetching now-playing:", error);
+    const data = await fetchFromTMDB<PaginatedResponse>(
+      `/movie/now_playing?page=${page}`,
+      3600,
+    );
+    if (!data) {
       return {
         results: NOW_PLAYING_MOVIES,
         page: 1,
@@ -87,6 +92,7 @@ export const movieService = {
         total_results: NOW_PLAYING_MOVIES.length,
       };
     }
+    return data;
   },
 
   async search(
@@ -94,35 +100,25 @@ export const movieService = {
     page = 1,
     filters?: Partial<SearchFilters>,
   ): Promise<PaginatedResponse> {
-    try {
-      const params = new URLSearchParams({
-        q: query,
-        page: String(page),
-      });
+    const params = new URLSearchParams({
+      query,
+      page: String(page),
+    });
 
-      if (filters?.year) params.append("year", String(filters.year));
-      if (filters?.minRating)
-        params.append("minRating", String(filters.minRating));
+    if (filters?.year)
+      params.append("primary_release_year", String(filters.year));
 
-      const response = await fetch(
-        `${baseUrl}/api/search?${params.toString()}`,
-      );
+    const data = await fetchFromTMDB<PaginatedResponse>(
+      `/search/movie?${params.toString()}`,
+      3600,
+    );
 
-      if (!response.ok) {
-        throw new Error(`Failed to search movies: ${response.statusText}`);
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error searching:", error);
-
-      // Fallback to mock data search
+    if (!data) {
       const filtered = MOCK_MOVIES.filter(
         (m) =>
           m.title.toLowerCase().includes(query.toLowerCase()) ||
           m.overview.toLowerCase().includes(query.toLowerCase()),
       );
-
       return {
         results: filtered,
         page: 1,
@@ -130,64 +126,51 @@ export const movieService = {
         total_results: filtered.length,
       };
     }
+    return data;
   },
 
   async getMovieDetails(movieId: number): Promise<Movie | null> {
-    try {
-      const response = await fetch(`${baseUrl}/api/movie/${movieId}`);
-
-      if (!response.ok) {
-        if (response.status === 404) return null;
-        throw new Error(
-          `Failed to fetch movie details: ${response.statusText}`,
-        );
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error fetching movie details:", error);
+    const data = await fetchFromTMDB<Movie>(
+      `/movie/${movieId}?append_to_response=videos,recommendations`,
+      7200,
+    );
+    if (!data) {
       return MOCK_MOVIES.find((m) => m.id === movieId) || null;
     }
+    return data;
   },
 
   async discover(
     filters: Partial<SearchFilters>,
     page = 1,
   ): Promise<PaginatedResponse> {
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-      });
+    const params = new URLSearchParams({
+      page: String(page),
+    });
 
-      if (filters.year) params.append("year", String(filters.year));
-      if (filters.genreId)
-        params.append("with_genres", String(filters.genreId));
-      if (filters.minRating)
-        params.append("vote_average.gte", String(filters.minRating));
-      if (filters.sortBy) {
-        // Map sortBy to TMDB sort_by
-        const sortMap = {
-          popularity: "popularity.desc",
-          rating: "vote_average.desc",
-          release_date: "primary_release_date.desc",
-        };
-        params.append(
-          "sort_by",
-          sortMap[filters.sortBy as keyof typeof sortMap] || "popularity.desc",
-        );
-      }
-
-      const response = await fetch(
-        `${baseUrl}/api/discover?${params.toString()}`,
+    if (filters.year)
+      params.append("primary_release_year", String(filters.year));
+    if (filters.genreId) params.append("with_genres", String(filters.genreId));
+    if (filters.minRating)
+      params.append("vote_average.gte", String(filters.minRating));
+    if (filters.sortBy) {
+      const sortMap = {
+        popularity: "popularity.desc",
+        rating: "vote_average.desc",
+        release_date: "primary_release_date.desc",
+      };
+      params.append(
+        "sort_by",
+        sortMap[filters.sortBy as keyof typeof sortMap] || "popularity.desc",
       );
+    }
 
-      if (!response.ok) {
-        throw new Error(`Failed to discover movies: ${response.statusText}`);
-      }
+    const data = await fetchFromTMDB<PaginatedResponse>(
+      `/discover/movie?${params.toString()}`,
+      3600,
+    );
 
-      return response.json();
-    } catch (error) {
-      console.error("[movieService] Error discovering:", error);
+    if (!data) {
       return {
         results: TRENDING_MOVIES,
         page: 1,
@@ -195,6 +178,7 @@ export const movieService = {
         total_results: TRENDING_MOVIES.length,
       };
     }
+    return data;
   },
 
   filterMovies(movies: Movie[], filters: SearchFilters): Movie[] {
@@ -222,7 +206,6 @@ export const movieService = {
       filtered = filtered.filter((m) => m.vote_average >= filters.minRating!);
     }
 
-    // Sort
     const sortBy = filters.sortBy || "popularity";
     if (sortBy === "rating") {
       filtered.sort((a, b) => b.vote_average - a.vote_average);
@@ -233,7 +216,6 @@ export const movieService = {
           new Date(a.release_date).getTime(),
       );
     } else {
-      // popularity
       filtered.sort((a, b) => b.popularity - a.popularity);
     }
 

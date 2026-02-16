@@ -20,7 +20,7 @@ export function HeaderApp() {
               </span>
             </div>
             <span className="font-bold text-lg hidden sm:inline text-foreground">
-              Movie Explorer
+              Explorador de Películas
             </span>
           </Link>
 

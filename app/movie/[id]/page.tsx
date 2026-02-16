@@ -1,37 +1,17 @@
 import { ExternalLink, Calendar, Clock, Star } from "lucide-react";
 import { HeaderApp } from "@/components/header";
 import { MovieCarousel } from "@/components/movie-carousel";
-import { getImageUrl } from "@/lib/movie-service";
+import { movieService, getImageUrl } from "@/lib/movie-service";
 import Link from "next/link";
-import type { Movie } from "@/types";
 import { FavoriteButton } from "@/components/favorite-button";
-import { use } from "react";
-
-async function getMovieData(id: string): Promise<Movie | null> {
-  const API_KEY = process.env.API_KEY;
-  const BASE_URL = "https://api.themoviedb.org/3";
-
-  if (!API_KEY) return null;
-
-  try {
-    const res = await fetch(
-      `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=es-ES&append_to_response=recommendations`,
-      { next: { revalidate: 7200 } },
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching movie:", error);
-    return null;
-  }
-}
 
 export default async function MovieDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const movie = await getMovieData((await params).id);
+  const resolvedParams = await params;
+  const movie = await movieService.getMovieDetails(parseInt(resolvedParams.id));
 
   if (!movie) {
     return (
