@@ -1,9 +1,7 @@
 "use client";
-
-import React from "react";
-
-import { X } from "lucide-react";
-import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,42 +11,64 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useMovieStore } from "@/lib/store";
 import { GENRES } from "@/lib/mock-data";
 
 export function SearchFilters() {
-  const { filters, setFilters, resetFilters } = useMovieStore();
-  const [localQuery, setLocalQuery] = useState(filters.query);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [localQuery, setLocalQuery] = useState(searchParams.get("q") || "");
+
+  // Update local query when URL changes (e.g. back button)
+  useEffect(() => {
+    const q = searchParams.get("q") || "";
+    setLocalQuery((prev) => (prev === q ? prev : q));
+  }, [searchParams]);
+
+  const updateFilters = (newFilters: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value === null || value === "all" || value === "0") {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+
+    // Reset to first page on filter change
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setFilters({ query: localQuery });
+    updateFilters({ q: localQuery });
   };
 
   const handleYearChange = (value: string) => {
-    setFilters({ year: value ? parseInt(value) : undefined });
+    updateFilters({ year: value });
   };
 
   const handleGenreChange = (value: string) => {
-    setFilters({ genreId: value ? parseInt(value) : undefined });
+    updateFilters({ genreId: value });
   };
 
   const handleRatingChange = (value: string) => {
-    setFilters({ minRating: value ? parseInt(value) : 0 });
+    updateFilters({ minRating: value });
   };
 
   const handleSortChange = (value: string) => {
-    setFilters({
-      sortBy: value as "popularity" | "rating" | "release_date",
-    });
+    updateFilters({ sortBy: value });
   };
 
-  const hasActiveFilters =
-    filters.query ||
-    filters.year ||
-    filters.genreId ||
-    filters.minRating ||
-    filters.sortBy !== "popularity";
+  const resetFilters = () => {
+    setLocalQuery("");
+    router.push(pathname);
+  };
+
+  const hasActiveFilters = searchParams.toString().length > 0;
 
   return (
     <div className="space-y-4">
@@ -56,12 +76,13 @@ export function SearchFilters() {
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input
           type="text"
-          placeholder="Buscar películas, series..."
+          placeholder="Buscar películas..."
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           className="flex-1"
         />
         <Button type="submit" className="px-6">
+          <Search className="w-4 h-4 mr-2" />
           Buscar
         </Button>
       </form>
@@ -70,7 +91,7 @@ export function SearchFilters() {
       <div className="flex flex-wrap gap-3 items-center">
         {/* Year Filter */}
         <Select
-          value={filters.year?.toString() || "all"}
+          value={searchParams.get("year") || "all"}
           onValueChange={handleYearChange}
         >
           <SelectTrigger className="w-32">
@@ -88,7 +109,7 @@ export function SearchFilters() {
 
         {/* Genre Filter */}
         <Select
-          value={filters.genreId?.toString() || "all"}
+          value={searchParams.get("genreId") || "all"}
           onValueChange={handleGenreChange}
         >
           <SelectTrigger className="w-32">
@@ -106,7 +127,7 @@ export function SearchFilters() {
 
         {/* Rating Filter */}
         <Select
-          value={filters.minRating?.toString() || "0"}
+          value={searchParams.get("minRating") || "0"}
           onValueChange={handleRatingChange}
         >
           <SelectTrigger className="w-32">
@@ -123,7 +144,7 @@ export function SearchFilters() {
 
         {/* Sort Filter */}
         <Select
-          value={filters.sortBy || "popularity"}
+          value={searchParams.get("sortBy") || "popularity"}
           onValueChange={handleSortChange}
         >
           <SelectTrigger className="w-40">

@@ -150,6 +150,53 @@ export const movieService = {
     }
   },
 
+  async discover(
+    filters: Partial<SearchFilters>,
+    page = 1,
+  ): Promise<PaginatedResponse> {
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+      });
+
+      if (filters.year) params.append("year", String(filters.year));
+      if (filters.genreId)
+        params.append("with_genres", String(filters.genreId));
+      if (filters.minRating)
+        params.append("vote_average.gte", String(filters.minRating));
+      if (filters.sortBy) {
+        // Map sortBy to TMDB sort_by
+        const sortMap = {
+          popularity: "popularity.desc",
+          rating: "vote_average.desc",
+          release_date: "primary_release_date.desc",
+        };
+        params.append(
+          "sort_by",
+          sortMap[filters.sortBy as keyof typeof sortMap] || "popularity.desc",
+        );
+      }
+
+      const response = await fetch(
+        `${baseUrl}/api/discover?${params.toString()}`,
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to discover movies: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("[movieService] Error discovering:", error);
+      return {
+        results: TRENDING_MOVIES,
+        page: 1,
+        total_pages: 1,
+        total_results: TRENDING_MOVIES.length,
+      };
+    }
+  },
+
   filterMovies(movies: Movie[], filters: SearchFilters): Movie[] {
     let filtered = movies;
 
