@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, Layout, List } from "lucide-react";
 import { useMovieStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { ThemeChanger } from "./theme-changer";
 
 export function HeaderApp() {
   const { favorites, viewMode, setViewMode } = useMovieStore();
@@ -51,7 +52,7 @@ export function HeaderApp() {
               )}
             </Link>
           </nav>
-
+          <ThemeChanger />
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             {/* View Mode Toggle */}
