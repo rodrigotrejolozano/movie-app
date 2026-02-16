@@ -11,7 +11,12 @@ export interface Movie {
   genre_ids: number[];
   runtime?: number;
   genres?: Genre[];
-  videos?: Video[];
+  videos?: {
+    results: Video[];
+  };
+  recommendations?: {
+    results: Movie[];
+  };
 }
 
 export interface Genre {
@@ -32,7 +37,7 @@ export interface SearchFilters {
   year?: number;
   genreId?: number;
   minRating?: number;
-  sortBy?: 'popularity' | 'rating' | 'release_date';
+  sortBy?: "popularity" | "rating" | "release_date";
 }
 
 export interface PaginatedResponse {

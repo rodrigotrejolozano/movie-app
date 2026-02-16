@@ -28,7 +28,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     const tmdbResponse = await fetch(
-      `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&page=${page}&language=en-US`,
+      `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&page=${page}&language=es-ES`,
       {
         next: { revalidate: 3600 },
         headers: { "Content-Type": "application/json" },

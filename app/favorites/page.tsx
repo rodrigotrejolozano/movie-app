@@ -14,9 +14,12 @@ export default function FavoritesPage() {
       <main className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">My Favorites</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Mis Favoritos
+            </h1>
             <p className="text-muted-foreground">
-              {favorites.length} movie{favorites.length !== 1 ? "s" : ""} saved
+              {favorites.length} película{favorites.length !== 1 ? "s" : ""}{" "}
+              guarda{favorites.length !== 1 ? "das" : "da"}
             </p>
           </div>
 
@@ -25,17 +28,17 @@ export default function FavoritesPage() {
               <div className="text-center space-y-4 max-w-md">
                 <div className="text-6xl mb-4">💔</div>
                 <h2 className="text-2xl font-semibold text-foreground">
-                  No favorites yet
+                  Aún no tienes favoritos
                 </h2>
                 <p className="text-muted-foreground">
-                  Start adding movies to your favorites list by clicking the
-                  heart icon
+                  Comienza a añadir películas a tu lista de favoritos haciendo
+                  clic en el icono del corazón.
                 </p>
                 <Link
                   href="/explore"
                   className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors mt-4"
                 >
-                  Explore Movies
+                  Explorar Películas
                 </Link>
               </div>
             </div>

@@ -52,7 +52,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     // Build TMDB URL with filters
-    let tmdbUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}&language=en-US`;
+    let tmdbUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}&language=es-ES`;
     console.log(tmdbUrl);
     if (year) tmdbUrl += `&primary_release_year=${year}`;
 

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useMovieStore } from '@/lib/store';
-import { MovieCard } from './movie-card';
-import type { Movie } from '@/types';
+import { useMovieStore } from "@/lib/store";
+import { MovieCard } from "./movie-card";
+import type { Movie } from "@/types";
 
 interface MovieGridProps {
   movies: Movie[];
@@ -17,17 +17,17 @@ export function MovieGrid({ movies, showEmpty = true }: MovieGridProps) {
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="text-center space-y-2">
           <h3 className="text-xl font-semibold text-foreground">
-            No movies found
+            No se encontraron películas
           </h3>
           <p className="text-muted-foreground">
-            Try adjusting your search or filters
+            Intenta ajustar tu búsqueda o los filtros
           </p>
         </div>
       </div>
     );
   }
 
-  if (viewMode === 'list') {
+  if (viewMode === "list") {
     return (
       <div className="space-y-3">
         {movies.map((movie) => (
@@ -43,7 +43,8 @@ export function MovieGrid({ movies, showEmpty = true }: MovieGridProps) {
                 {movie.title}
               </h3>
               <p className="text-sm text-muted-foreground mb-2">
-                {movie.release_date.split('-')[0]} · ★ {movie.vote_average.toFixed(1)}
+                {movie.release_date.split("-")[0]} · ★{" "}
+                {movie.vote_average.toFixed(1)}
               </p>
               <p className="text-sm text-foreground line-clamp-2">
                 {movie.overview}

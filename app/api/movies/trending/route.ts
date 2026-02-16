@@ -31,11 +31,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       return createRateLimitedResponse(response, limit);
     }
     console.log(
-      `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&page=${page}&language=en-US`,
+      `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&page=${page}&language=es-ES`,
     );
     // Fetch from TMDB - Next.js caches this automatically via revalidate
     const tmdbResponse = await fetch(
-      `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&page=${page}&language=en-US`,
+      `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&page=${page}&language=es-ES`,
       {
         next: { revalidate: 3600 },
         headers: {

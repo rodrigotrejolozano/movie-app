@@ -41,7 +41,7 @@ export async function GET(
 
     // Fetch from TMDB
     const tmdbResponse = await fetch(
-      `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`,
+      `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=es-ES`,
       {
         next: { revalidate: 7200 },
         headers: { "Content-Type": "application/json" },
